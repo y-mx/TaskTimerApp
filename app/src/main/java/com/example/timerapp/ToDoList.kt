@@ -11,11 +11,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
+import java.lang.NumberFormatException
 
 private const val TAG = "ToDoList"
 private const val CONTENT = "Text_Content"
 class ToDoList : AppCompatActivity() {
-    var count: Int = 0
+    var count: Long = 0
     private var taskList: TextView?=null
     val dbHelper = DatabaseHelper(this)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,8 +50,13 @@ class ToDoList : AppCompatActivity() {
             override fun onClick(view: View){
                 val db = dbHelper.writableDatabase
                 count=0;
+                try{
+                    count=editText.text.toString().toLong()
+                } catch (e: NumberFormatException){
+                    Log.d(TAG, "number format exception")
+                }
                 editText.text.clear()
-                db.delete("tasks", null, null);
+                db.delete("tasks", "_ID"+"="+count, null);
                 displayTasks()
             }
         })
